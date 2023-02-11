@@ -1,0 +1,46 @@
+//The IsPalindrome function first calculates two hash values, left_hash and right_hash, for the left and right halves of the string, respectively. Then, it checks the equality of the hash values of the corresponding substrings in the two halves by using the rolling hash operation. If any of the hash values are different, the function returns false. If all hash values are equal, the function returns true, indicating that the string is a palindrome.
+#include <iostream>
+#include <cmath>
+#include <string>
+
+typedef unsigned int HashType;
+const HashType Base = 31;
+const HashType Mod = 1000000007;
+
+void RollingHash(const std::string& s, HashType& hash, int length) {
+  hash = 0;
+  for (int i = 0; i < length; i++) {
+    hash = (hash * Base + s[i]) % Mod;
+  }
+}
+
+void RollingHashRoll(HashType& hash, char c_out, char c_in, int length) {
+  HashType power = std::pow(Base, length);
+  hash = ((hash + Mod - c_out * power % Mod) * Base + c_in) % Mod;
+}
+
+bool IsPalindrome(const std::string& s) {
+  int n = s.size();
+  int mid = n / 2;
+  HashType left_hash = 0, right_hash = 0;
+  RollingHash(s, left_hash, mid);
+  RollingHash(s, right_hash, mid + n % 2);
+  for (int i = 0; i < mid; i++) {
+    RollingHashRoll(right_hash, s[n-i-mid-1], s[n-i-1], mid + n % 2);
+    if (left_hash != right_hash) {
+      return false;
+    }
+    RollingHashRoll(left_hash, s[i], s[i+mid], mid);
+  }
+  return true;
+}
+
+int main() {
+  std::string s = "hello";
+  if (IsPalindrome(s)) {
+    std::cout << s << " is a palindrome." << std::endl;
+  } else {
+    std::cout << s << " is not a palindrome." << std::endl;
+  }
+  return 0;
+}
