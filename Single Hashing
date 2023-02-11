@@ -1,0 +1,26 @@
+#include <iostream>
+#include <cmath>
+
+typedef unsigned int HashType;
+const HashType Base = 31;
+const HashType Mod = 1000000007;
+
+void RollingHash(const std::string& s, HashType& hash, int length) {
+  hash = 0;
+  for (int i = 0; i < length; i++) {
+    hash = (hash * Base + s[i]) % Mod;
+  }
+}
+
+void RollingHashRoll(HashType& hash, char c_out, char c_in, int length) {
+  HashType power = std::pow(Base, length);
+  hash = ((hash + Mod - c_out * power % Mod) * Base + c_in) % Mod;
+}
+
+int main() {
+  std::string s = "hello";
+  HashType hash;
+  RollingHash(s, hash, 5);
+  std::cout << hash << std::endl;
+  return 0;
+}
